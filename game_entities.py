@@ -26,7 +26,12 @@ class Location:
     """A location in our text adventure game world.
 
     Instance Attributes:
-        - # TODO Describe each instance attribute here
+        - id_num: The integer identifier for this location.
+        - brief_description: A short description of the location (for repeated visits).
+        - long_description: A detailed description of the location (for the first visit).
+        - available_commands: A dict mapping valid command strings (e.g., 'go north') to the ID of the destination location.
+        - items: A list of names of items currently present in this location.
+        - visited: A boolean indicating whether the player has visited this location at least once.
 
     Representation Invariants:
         - # TODO Describe any necessary representation invariants
@@ -51,10 +56,17 @@ class Item:
     """An item in our text adventure game world.
 
     Instance Attributes:
-        - # TODO Describe each instance attribute here
+        - name: The name of the item (e.g., 'lucky mug').
+        - description: A description of the item.
+        - start_position: The location ID where this item is initially found.
+        - target_position: The location ID where this item must be deposited to earn points.
+        - target_points: The number of points awarded for depositing this item at the target position.
 
     Representation Invariants:
-        - # TODO Describe any necessary representation invariants
+        - len(self.name) > 0
+        - self.start_position > 0
+        - self.target_position > 0
+        - self.target_points >= 0
     """
 
     # NOTES:
@@ -66,6 +78,7 @@ class Item:
     # All item objects in your game MUST be represented as an instance of this class.
 
     name: str
+    description: str
     start_position: int
     target_position: int
     target_points: int

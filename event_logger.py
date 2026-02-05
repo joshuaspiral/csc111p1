@@ -78,7 +78,7 @@ class EventList:
     def is_empty(self) -> bool:
         """Return whether this event list is empty."""
 
-        # TODO: Your code below
+        return self.first is None
 
     def add_event(self, event: Event, command: str = None) -> None:
         """
@@ -86,23 +86,42 @@ class EventList:
         The given command is the command which was used to reach this new event, or None if this is the first
         event in the game.
         """
-        # Hint: You should update the previous node's <next_command> as needed
-
-        # TODO: Your code below
+        if self.is_empty():
+            self.first = event
+            self.last = event
+        else:
+            self.last.next = event
+            event.prev = self.last
+            self.last.next_command = command
+            self.last = event
 
     def remove_last_event(self) -> None:
         """
         Remove the last event from this event list.
         If the list is empty, do nothing.
         """
-        # Hint: The <next_command> and <next> attributes for the new last event should be updated as needed
+        if self.is_empty():
+            return
 
-        # TODO: Your code below
+        if self.first == self.last:
+            # Only one item
+            self.first = None
+            self.last = None
+        else:
+            # More than one item
+            prev_event = self.last.prev
+            prev_event.next = None
+            prev_event.next_command = None
+            self.last = prev_event
 
     def get_id_log(self) -> list[int]:
         """Return a list of all location IDs visited for each event in this list, in sequence."""
-
-        # TODO: Your code below
+        ids = []
+        curr = self.first
+        while curr is not None:
+            ids.append(curr.id_num)
+            curr = curr.next
+        return ids
 
     # Note: You may add other methods to this class as needed
 

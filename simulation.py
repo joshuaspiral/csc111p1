@@ -48,11 +48,11 @@ class AdventureGameSimulation:
         self._events = EventList()
         self._game = AdventureGame(game_data_file, initial_location_id)
 
-        # TODO: Add first event (initial location, no previous command)
-        # Hint: self._game.get_location() gives you back the current location
+        # First event
+        loc = self._game.get_location()
+        self._events.add_event(Event(loc.id_num, loc.long_description), None)
 
-        # TODO: Generate the remaining events based on the commands and initial location
-        # Hint: Call self.generate_events with the appropriate arguments
+        self.generate_events(commands, loc)
 
     def generate_events(self, commands: list[str], current_location: Location) -> None:
         """
@@ -62,10 +62,8 @@ class AdventureGameSimulation:
         - len(commands) > 0
         - all commands in the given list are valid commands when starting from current_location
         """
-
-        # TODO: Complete this method as specified. For each command, generate the event and add it to self._events.
-        # Hint: current_location.available_commands[command] will return the next location ID
-        # which executing <command> while in <current_location_id> leads to
+        for cmd in commands:
+            self._game.process_command(cmd, self._events)
 
     def get_id_log(self) -> list[int]:
         """
@@ -103,9 +101,30 @@ if __name__ == "__main__":
     #     'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
     # })
 
-    # TODO: Modify the code below to provide a walkthrough of commands needed to win and lose the game
-    win_walkthrough = []  # Create a list of all the commands needed to walk through your game to win it
-    expected_log = []  # Update this log list to include the IDs of all locations that would be visited
+    # Win Walkthrough
+    # 1(Bahen) -> take toonie -> 2(StGeorge) -> 3(Robarts) -> take usb -> take charger -> 2 -> 5(Cafe) -> drop toonie (pts)
+    # -> take toonie (need it) -> take mug -> 2 -> 3 -> 4(Dorm) -> drop/drop/drop.
+    win_walkthrough = [
+        "take toonie",
+        "go east",  # to 2
+        "go north", # to 3
+        "take usb drive",
+        "take laptop charger",
+        "go south", # to 2
+        "go east",  # to 5
+        "drop toonie",
+        "take toonie",
+        "take lucky mug",
+        "go west",  # to 2
+        "go north", # to 3
+        "go east",  # to 4
+        "drop usb drive",
+        "drop laptop charger",
+        "drop lucky mug"
+    ]
+    
+    expected_log = [1, 2, 3, 2, 5, 2, 3, 4] 
+    
     # Uncomment the line below to test your walkthrough
     sim = AdventureGameSimulation('game_data.json', 1, win_walkthrough)
     assert expected_log == sim.get_id_log()
@@ -115,7 +134,7 @@ if __name__ == "__main__":
     expected_log = []  # Update this log list to include the IDs of all locations that would be visited
     # Uncomment the line below to test your demo
     sim = AdventureGameSimulation('game_data.json', 1, lose_demo)
-    assert expected_log == sim.get_id_log()
+    assert expected_log == sim.get_id_log()    
 
     # TODO: Add code below to provide walkthroughs that show off certain features of the game
     # TODO: Create a list of commands involving visiting locations, picking up items, and then

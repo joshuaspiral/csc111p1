@@ -24,6 +24,10 @@ from typing import Optional
 from game_entities import Location, Item
 from event_logger import Event, EventList
 
+# Game Constants
+MAX_MOVES = 50
+FIND_POINT_VALUE = 5
+
 
 # Note: You may add in other import statements here as needed
 
@@ -47,6 +51,10 @@ class AdventureGame:
 
     _locations: dict[int, Location]
     _items: list[Item]
+    inventory: list[Item]
+    score: int
+    moves: int
+    max_moves: int
     current_location_id: int  # Suggested attribute, can be removed
     ongoing: bool  # Suggested attribute, can be removed
 
@@ -73,6 +81,13 @@ class AdventureGame:
         # Suggested attributes (you can remove and track these differently if you wish to do so):
         self.current_location_id = initial_location_id  # game begins at this location
         self.ongoing = True  # whether the game is ongoing
+        self.inventory = []  # list of Item objects
+        self.moves = 0
+        self.inventory = []  # list of Item objects
+        self.moves = 0
+        self.max_moves = MAX_MOVES
+        self.found_items = set()
+        self.deposited_items = set()
 
     @staticmethod
     def _load_game_data(filename: str) -> tuple[dict[int, Location], list[Item]]:
@@ -91,7 +106,10 @@ class AdventureGame:
 
         items = []
         # TODO: Add Item objects to the items list; your code should be structured similarly to the loop above
-        # YOUR CODE BELOW
+        for item_data in data['items']:
+            item_obj = Item(item_data['name'], item_data['description'], item_data['start_position'],
+                            item_data['target_position'], item_data['target_points'])
+            items.append(item_obj)
 
         return locations, items
 

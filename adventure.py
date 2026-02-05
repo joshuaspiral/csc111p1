@@ -286,7 +286,7 @@ if __name__ == "__main__":
 
         # Show items at location
         if location.items:
-            print(f"\n{YELLOW}✨ You see: {BOLD}{', '.join(location.items)}{RESET}")
+            print(f"\n{YELLOW}👀 You see: {BOLD}{', '.join(location.items)}{RESET}")
 
         # Display possible actions
         print(f"\n{MAGENTA}{'─'*40}{RESET}")

@@ -108,9 +108,108 @@ class AdventureGame:
         """Return Location object associated with the provided location ID.
         If no ID is provided, return the Location object associated with the current location.
         """
-
         # TODO: Complete this method as specified
-        # YOUR CODE BELOW
+        if loc_id is None:
+            return self._locations[self.current_location_id]
+        return self._locations[loc_id]
+
+    def find_item_by_name(self, name: str) -> Optional[Item]:
+        """Return the Item object with the given name, or None if not found."""
+        for item in self._items:
+            if item.name.lower() == name.lower():
+                return item
+        return None
+
+    def check_win_condition(self) -> bool:
+        """Check if the player has won by depositing all required items at the target location."""
+        target_loc = self.get_location(TARGET_LOCATION)
+        return all(item_name in target_loc.items for item_name in REQUIRED_ITEMS)
+
+    def check_lose_condition(self) -> bool:
+        """Check if the player has lost by exceeding maximum moves."""
+        return self.moves >= self.max_moves
+
+    def process_command(self, command: str, log: EventList) -> str:
+        """Process a command, updating game state and log, and returning a result message."""
+        loc = self.get_location()
+        parts = command.lower().strip().split(" ", 1)
+        verb = parts[0]
+        noun = parts[1] if len(parts) > 1 else ""
+
+        if verb == "quit":
+            self.ongoing = False
+            return ""
+        elif verb == "look":
+            return loc.long_description
+        elif verb == "inventory":
+            lines = ["Inventory:"]
+            if not self.inventory:
+                lines.append("  (empty)")
+            else:
+                for item in self.inventory:
+                    lines.append(f"  - {item.name}")
+            return "\n".join(lines)
+        elif verb == "score":
+            return f"Current Score: {self.score}\nMoves: {self.moves}/{self.max_moves}"
+        elif verb == "log":
+            log.display_events()
+            return ""
+        elif command in loc.available_commands:
+            next_id = loc.available_commands[command]
+            # SImple Puzzle: Entering Robarts (ID 3) requires 'tcard'
+            if next_id == 3 and not any(i.name == 'tcard' for i in self.inventory):
+                return "You try to enter Robarts Library, but the turnstile gate is locked.\nYou need your T-Card to tap in."
+
+            self.current_location_id = next_id
+            self.moves += 1
+            new_loc = self.get_location()
+            log.add_event(Event(new_loc.id_num, new_loc.long_description), command)
+            return ""
+        elif verb == "take" or (verb == "pick" and noun.startswith("up ")):
+            if verb == "pick":
+                noun = noun[3:]
+            if noun in loc.items:
+                loc.items.remove(noun)
+                item_obj = self.find_item_by_name(noun)
+                if item_obj:
+                    self.inventory.append(item_obj)
+                    msg = f"You picked up the {noun}."
+                    if noun not in self.found_items:
+                        self.score += FIND_POINT_VALUE
+                        self.found_items.add(noun)
+                    return msg
+                return "Error: Item data not found."
+            return "You don't see that here."
+        elif verb == "drop":
+            found_idx = -1
+            for i, it in enumerate(self.inventory):
+                if it.name.lower() == noun.lower():
+                    found_idx = i
+                    break
+
+            if found_idx != -1:
+                it = self.inventory.pop(found_idx)
+                loc.items.append(it.name)
+                msg = f"You dropped the {noun}."
+                if loc.id_num == it.target_position and it.name not in self.deposited_items:
+                    msg += f"\nYou deposited the {it.name} in the correct place! (+{it.target_points} points)"
+                    self.score += it.target_points
+                    self.deposited_items.add(it.name)
+                return msg
+            return "You aren't carrying that."
+        elif verb == "examine":
+            target = None
+            for it in self.inventory:
+                if it.name.lower() == noun.lower():
+                    target = it
+                    break
+            if not target and noun in loc.items:
+                target = self.find_item_by_name(noun)
+            if target:
+                return target.description
+            return "You don't see that here."
+
+        return "I don't understand that command."
 
 
 if __name__ == "__main__":

@@ -7,3 +7,4 @@ CSC111 Project 1 Winter 2026
 - [ ] write up report
 - [ ] refactor process.comand (add helper functions, e.g., _handle_take)
 - [ ] add extra feature
+- [ ] (optional:) extra lose condition (cheating)

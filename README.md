@@ -5,3 +5,5 @@ CSC111 Project 1 Winter 2026
 - [ ] implement more complex puzzles
 - [ ] finish simulation.py demos for new puzzles
 - [ ] write up report
+- [ ] refactor process.comand (add helper functions, e.g., _handle_take)
+- [ ] add extra feature

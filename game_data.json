@@ -50,7 +50,7 @@
       "id": 5,
       "name": "Cafe Reznikoff",
       "brief_description": "You are at Cafe Reznikoff.",
-      "long_description": "You are at Cafe Reznikoff. The smell of fresh coffee and pastries fills the air. It's a great place to take a break. To the West is St. George Street.",
+      "long_description": "You are at Cafe Reznikoff. The smell of fresh coffee and pastries fills the air. It's a great place to take a break, but you have no time for a break! To the West is St. George Street.",
       "available_commands": {
         "go west": 2
       },

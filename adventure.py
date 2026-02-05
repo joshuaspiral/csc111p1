@@ -30,6 +30,26 @@ FIND_POINT_VALUE = 5
 REQUIRED_ITEMS = ["usb drive", "laptop charger", "lucky mug"]
 TARGET_LOCATION = 4
 
+# ANSI Color Codes
+"""ANSI escape codes for terminal colors."""
+RESET = "\033[0m"
+BOLD = "\033[1m"
+DIM = "\033[2m"
+
+# Colors
+RED = "\033[91m"
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+BLUE = "\033[94m"
+MAGENTA = "\033[95m"
+CYAN = "\033[96m"
+WHITE = "\033[97m"
+
+# Backgrounds
+BG_BLUE = "\033[44m"
+BG_GREEN = "\033[42m"
+BG_RED = "\033[41m"
+
 
 class AdventureGame:
     """A text adventure game class storing all location, item and map data.
@@ -181,20 +201,20 @@ class AdventureGame:
                 return "Error: Item data not found."
             return "You don't see that here."
         elif verb == "drop":
-            found_idx = -1
-            for i, it in enumerate(self.inventory):
+            item = None
+            for it in self.inventory:
                 if it.name.lower() == noun.lower():
-                    found_idx = i
+                    item = it
                     break
 
-            if found_idx != -1:
-                it = self.inventory.pop(found_idx)
-                loc.items.append(it.name)
+            if item:
+                self.inventory.remove(item)
+                loc.items.append(item.name)
                 msg = f"You dropped the {noun}."
-                if loc.id_num == it.target_position and it.name not in self.deposited_items:
-                    msg += f"\nYou deposited the {it.name} in the correct place! (+{it.target_points} points)"
-                    self.score += it.target_points
-                    self.deposited_items.add(it.name)
+                if loc.id_num == item.target_position and item.name not in self.deposited_items:
+                    msg += f"\nYou deposited the {item.name} in the correct place! (+{item.target_points} points)"
+                    self.score += item.target_points
+                    self.deposited_items.add(item.name)
                 return msg
             return "You aren't carrying that."
         elif verb == "examine":
@@ -226,53 +246,69 @@ if __name__ == "__main__":
     game = AdventureGame('game_data.json', 1)
     menu = ["look", "inventory", "score", "log", "quit"]
 
+    # Welcome banner
+    print(f"\n{BOLD}{CYAN}{'='*60}{RESET}")
+    print(f"{BOLD}{YELLOW}  CSC111 TEXT ADVENTURE: The Missing Project Files {RESET}")
+    print(f"{BOLD}{CYAN}{'='*60}{RESET}")
+    print(f"{DIM}Find your USB drive, laptop charger, and lucky mug!{RESET}")
+    print(f"{DIM}Return them to your dorm before the 1pm deadline.{RESET}\n")
+
     # Log starting location
     start_loc = game.get_location()
     game_log.add_event(Event(start_loc.id_num, start_loc.long_description), None)
 
     while game.ongoing:
-        # Note: If the loop body is getting too long, you should split the body up into helper functions
-        # for better organization. Part of your mark will be based on how well-organized your code is.
-
         location = game.get_location()
 
         # Check win condition
         if game.check_win_condition():
-            print("\nCongratulations! You have returned all the missing items to your dorm room.")
-            print(f"You finished with a score of {game.score}!")
+            print(f"\n{BOLD}{BG_GREEN}{WHITE} 🎉 CONGRATULATIONS! 🎉 {RESET}")
+            print(f"{GREEN}You have returned all the missing items to your dorm room!{RESET}")
+            print(f"{BOLD}Final Score: {YELLOW}{game.score}{RESET}")
             game.ongoing = False
             break
 
         # Check lose condition
         if game.check_lose_condition():
-            print("\nIt's 1:00pm! The deadline has passed.")
-            print("You ran out of time. GAME OVER.")
+            print(f"\n{BOLD}{BG_RED}{WHITE} ⏰ TIME'S UP! ⏰ {RESET}")
+            print(f"{RED}It's 1:00pm! The deadline has passed.{RESET}")
+            print(f"{DIM}You ran out of time. GAME OVER.{RESET}")
             game.ongoing = False
             break
 
-        # TODO: Depending on whether or not it's been visited before,
-        #  print either full description (first time visit) or brief description (every subsequent visit) of location
-        print(f"\nLOCATION {location.id_num}")
+        # Location header
+        print(f"\n{BOLD}{BG_BLUE}{WHITE} LOCATION {location.id_num} {RESET}")
         if not location.visited:
-            print(location.long_description)
+            print(f"{CYAN}{location.long_description}{RESET}")
             location.visited = True
         else:
-            print(location.brief_description)
+            print(f"{DIM}{location.brief_description}{RESET}")
 
-        # Display possible actions at this location
-        print("What to do? Choose from: look, inventory, score, log, quit")
-        print("At this location, you can also:")
-        for action in location.available_commands:
-            print("-", action)
+        # Show items at location
         if location.items:
-            print("You see:", ", ".join(location.items))
+            print(f"\n{YELLOW}✨ You see: {BOLD}{', '.join(location.items)}{RESET}")
 
-        # Get and validate input
-        choice = input("\nEnter action: ").lower().strip()
+        # Display possible actions
+        print(f"\n{MAGENTA}{'─'*40}{RESET}")
+        print(f"{BOLD}Commands:{RESET} {DIM}look, inventory, score, log, quit{RESET}")
+        print(f"{BOLD}Movement:{RESET}", end=" ")
+        actions = list(location.available_commands.keys())
+        print(f"{GREEN}{', '.join(actions)}{RESET}" if actions else f"{DIM}(none){RESET}")
 
-        print("========")
+        # Get input
+        choice = input(f"\n{BOLD}{WHITE}> {RESET}").lower().strip()
+
+        print(f"{DIM}{'─'*40}{RESET}")
 
         # Process command
         result_msg = game.process_command(choice, game_log)
         if result_msg:
-            print(result_msg)
+            # Color the result based on content
+            if "picked up" in result_msg or "deposited" in result_msg:
+                print(f"{GREEN}{result_msg}{RESET}")
+            elif "don't" in result_msg or "aren't" in result_msg or "locked" in result_msg:
+                print(f"{RED}{result_msg}{RESET}")
+            elif "Inventory" in result_msg or "Score" in result_msg:
+                print(f"{CYAN}{result_msg}{RESET}")
+            else:
+                print(result_msg)

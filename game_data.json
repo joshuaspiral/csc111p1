@@ -56,7 +56,7 @@
       "id": 4,
       "name": "Morrison Hall",
       "brief_description": "You are in your room at Morrison Hall. You find your passport sitting on your desk, that should probably be tucked away somewhere safe...",
-      "long_description": "You are in your dorm room at Morrison Hall. Your desk is messy with MAT137 problemsets and energy drinks. This is where you need to be to submit your project! To the West is Robarts Library.",
+      "long_description": "You are in your dorm room at Morrison Hall basement. Your desk is messy with MAT137 problemsets and energy drinks. There is no sunlight coming from your window facing a wall. This is where you need to be to submit your project! To the West is Robarts Library.",
       "available_commands": {
         "go west": 3
       },

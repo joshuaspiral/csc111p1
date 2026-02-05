@@ -102,57 +102,58 @@ if __name__ == "__main__":
     # })
 
     # Win Walkthrough
-    # 1(Bahen) -> take toonie -> 2(StGeorge) -> 3(Robarts) -> take usb -> take charger -> 2 -> 5(Cafe) -> drop toonie (pts)
-    # -> take toonie (need it) -> take mug -> 2 -> 3 -> 4(Dorm) -> drop/drop/drop.
+    # Take T-card, go to Robarts, take USB drive, go to Library, take laptop charger, go to Robarts, take lucky mug, go to Library, go to Robarts, drop USB drive, drop laptop charger, drop lucky mug
     win_walkthrough = [
-        "take toonie",
-        "go east",  # to 2
-        "go north", # to 3
+        "take tcard",
+        "go east",
+        "go north",
         "take usb drive",
         "take laptop charger",
-        "go south", # to 2
-        "go east",  # to 5
-        "drop toonie",
-        "take toonie",
+        "go south",
+        "go east",
         "take lucky mug",
-        "go west",  # to 2
-        "go north", # to 3
-        "go east",  # to 4
+        "go west",
+        "go north",
+        "go east",
         "drop usb drive",
         "drop laptop charger",
         "drop lucky mug"
     ]
-    
     expected_log = [1, 2, 3, 2, 5, 2, 3, 4] 
-    
-    # Uncomment the line below to test your walkthrough
     sim = AdventureGameSimulation('game_data.json', 1, win_walkthrough)
-    assert expected_log == sim.get_id_log()
+    assert expected_log == sim.get_id_log(), f"Win walkthrough failed: {sim.get_id_log()}"
 
-    # Create a list of all the commands needed to walk through your game to reach a 'game over' state
-    lose_demo = []
-    expected_log = []  # Update this log list to include the IDs of all locations that would be visited
-    # Uncomment the line below to test your demo
+    # Lose Demo (run out of moves by going back and forth)
+    lose_demo = ["go east", "go west"] * 25
+    expected_log = [1] + [2, 1] * 25
     sim = AdventureGameSimulation('game_data.json', 1, lose_demo)
     assert expected_log == sim.get_id_log()    
 
-    # TODO: Add code below to provide walkthroughs that show off certain features of the game
-    # TODO: Create a list of commands involving visiting locations, picking up items, and then
-    #   checking the inventory, your list must include the "inventory" command at least once
-    # inventory_demo = [..., "inventory", ...]
-    # expected_log = []
-    # sim = AdventureGameSimulation(...)
-    # assert expected_log == sim.get_id_log()
+    # Inventory Demo
+    inventory_demo = ["take tcard", "inventory"]
+    expected_log = [1]
+    sim = AdventureGameSimulation('game_data.json', 1, inventory_demo)
+    assert expected_log == sim.get_id_log()
 
-    # scores_demo = [..., "score", ...]
-    # expected_log = []
-    # sim = AdventureGameSimulation(...)
-    # assert expected_log == sim.get_id_log()
+    # Scores Demo
+    scores_demo = ["take tcard", "score"]
+    expected_log = [1]
+    sim = AdventureGameSimulation('game_data.json', 1, scores_demo)
+    assert expected_log == sim.get_id_log()
 
-    # Add more enhancement_demos if you have more enhancements
-    # enhancement1_demo = [...]
-    # expected_log = []
-    # sim = AdventureGameSimulation(...)
-    # assert expected_log == sim.get_id_log()
+    # Enhancement Demos
+    # 1. Simple puzzle - need tcard to enter Robarts
+    simple_enhancement_demo = [
+        "go east",
+        "go north",
+        "go west",
+        "take tcard",
+        "go east",
+        "go north"
+    ]
+    expected_log = [1, 2, 1, 2, 3]
+    sim = AdventureGameSimulation('game_data.json', 1, simple_enhancement_demo)
+    assert expected_log == sim.get_id_log()
+    #todo! add more enhancement demos
 
-    # Note: You can add more code below for your own testing purposes
+    print("All simulation tests passed!")

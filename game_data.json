@@ -108,7 +108,8 @@
       "start_position": 6,
       "target_position": 3,
       "target_points": 0,
-      "required_items": ["wallet", "passport"]
+      "required_items": ["wallet", "passport"],
+      "heavy": false
     },
     {
       "name": "wallet",
@@ -129,7 +130,8 @@
       "description": "Your fob. You need this to enter your dorm room in Morrison.",
       "start_position": 1,
       "target_position": 4,
-      "target_points": 0
+      "target_points": 0,
+      "heavy": false
     },
     {
       "name": "usb drive",

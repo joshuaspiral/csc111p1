@@ -26,6 +26,7 @@ from event_logger import Event, EventList
 
 # Game Constants
 MAX_MOVES = 50
+MAX_ITEM = 2
 FIND_POINT_VALUE = 5
 REQUIRED_ITEMS = ["usb drive", "laptop charger", "lucky mug"]
 TARGET_LOCATION = 4
@@ -137,7 +138,8 @@ class AdventureGame:
         # TODO: Add Item objects to the items list; your code should be structured similarly to the loop above
         for item_data in data['items']:
             item_obj = Item(item_data['name'], item_data['description'], item_data['start_position'],
-                            item_data['target_position'], item_data['target_points'], item_data.get('required_items'))
+                            item_data['target_position'], item_data['target_points'], item_data.get('required_items'),
+                            item_data.get('heavy', True))
             items.append(item_obj)
 
         map_data = data.get("map", {"key": {}, "grid": ""})
@@ -249,6 +251,11 @@ class AdventureGame:
         item = self.find_item_by_name(item_name)
         if item is None:
             return "Error: Item data not found."
+
+        if item.heavy:
+            heavy_count = sum(1 for i in self.inventory if i.heavy)
+            if heavy_count >= MAX_ITEM:
+                return "You can't carry more than 2 heavy items."
 
         loc.items.remove(item_name)
         self.inventory.append(item)

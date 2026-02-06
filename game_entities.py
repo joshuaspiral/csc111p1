@@ -64,6 +64,8 @@ class Item:
         - target_position: The location ID where this item must be deposited to earn points.
         - target_points: The number of points awarded for depositing this item at the target position.
         - required_items: Optional list of item names required to get this item.
+        - heavy: A boolean, if True, it counts toward 2-item weight limit, if False can carry unlimited amount of it
+
 
     Representation Invariants:
         - len(self.name) > 0
@@ -86,6 +88,7 @@ class Item:
     target_position: int
     target_points: int
     required_items: list[str] | None = None
+    heavy: bool = True
 
 @dataclass
 class Map:

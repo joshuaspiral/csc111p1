@@ -63,6 +63,7 @@ class Item:
         - start_position: The location ID where this item is initially found.
         - target_position: The location ID where this item must be deposited to earn points.
         - target_points: The number of points awarded for depositing this item at the target position.
+        - required_items: Optional list of item names required to get this item.
 
     Representation Invariants:
         - len(self.name) > 0
@@ -84,6 +85,7 @@ class Item:
     start_position: int
     target_position: int
     target_points: int
+    required_items: list[str] | None = None
 
 @dataclass
 class Map:

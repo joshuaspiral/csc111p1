@@ -107,7 +107,8 @@
       "description": "Your T-Card. You need this to get into the library.",
       "start_position": 6,
       "target_position": 3,
-      "target_points": 0
+      "target_points": 0,
+      "required_items": ["wallet", "passport"]
     },
     {
       "name": "wallet",

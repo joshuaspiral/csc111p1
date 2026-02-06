@@ -114,7 +114,8 @@ class AdventureGame:
             'pick': self._handle_pick,
             'drop': self._handle_drop,
             'examine': self._handle_examine,
-            'read': self._handle_read
+            'read': self._handle_read,
+            'buy': self._handle_buy
         }
 
     @staticmethod
@@ -136,7 +137,7 @@ class AdventureGame:
         # TODO: Add Item objects to the items list; your code should be structured similarly to the loop above
         for item_data in data['items']:
             item_obj = Item(item_data['name'], item_data['description'], item_data['start_position'],
-                            item_data['target_position'], item_data['target_points'])
+                            item_data['target_position'], item_data['target_points'], item_data.get('required_items'))
             items.append(item_obj)
 
         map_data = data.get("map", {"key": {}, "grid": ""})
@@ -324,6 +325,32 @@ class AdventureGame:
             return self._map.display()
 
         return ""
+
+    def _handle_buy(self, noun: str, __: EventList) -> str:
+        loc = self.get_location()
+        command = f"buy {noun}"
+
+        if command not in loc.available_commands:
+            return f"You can't buy {noun} here."
+
+        item = self.find_item_by_name(noun)
+        if item is None:
+            return f"{noun} is not available for purchase."
+
+        required_items = getattr(item, "required_items", [])
+        inventory_items = {i.name for i in self.inventory}
+        missing = [req for req in required_items if req not in inventory_items]
+        if missing:
+            return f"You need {', '.join(missing)} to buy {noun}."
+
+        if any(i.name == noun for i in self.inventory):
+            return f"You already have {noun}."
+
+        self.inventory.append(item)
+        if noun in loc.items:
+            loc.items.remove(noun)
+
+        return f"You bought {noun}!"
 
 
 if __name__ == "__main__":

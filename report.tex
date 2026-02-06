@@ -88,11 +88,35 @@ Locations: 1 (Fob), 3 (USB Drive, Laptop Charger), 4 (Passport), 5 (Lucky Mug), 
     \item Item start location ID: 3
     \item Item target location ID: 4
     \end{itemize}
-    \item For Item 3 (Lucky Mug):
+    \item For Item 3 (Laptop Charger):
+    \begin{itemize}
+    \item Item name: laptop charger
+    \item Item start location ID: 3
+    \item Item target location ID: 4
+    \end{itemize}
+    \item For Item 4 (Passport):
+    \begin{itemize}
+    \item Item name: passport
+    \item Item start location ID: 4
+    \item Item target location ID: 6
+    \end{itemize}
+    \item For Item 5 (Lucky Mug):
     \begin{itemize}
     \item Item name: lucky mug
     \item Item start location ID: 5
     \item Item target location ID: 4
+    \end{itemize}
+    \item For Item 6 (T-Card):
+    \begin{itemize}
+    \item Item name: tcard
+    \item Item start location ID: 6
+    \item Item target location ID: 3
+    \end{itemize}
+    \item For Item 7 (Wallet):
+    \begin{itemize}
+    \item Item name: wallet
+    \item Item start location ID: 7
+    \item Item target location ID: 6
     \end{itemize}
 \end{enumerate}
 
@@ -111,36 +135,64 @@ Locations: 1 (Fob), 3 (USB Drive, Laptop Charger), 4 (Passport), 5 (Lucky Mug), 
 \begin{enumerate}
 
     \item Briefly describe the way players can earn score in your game. Include the first location in which they can increase their score, and the exact list of command(s) leading up to the score increase:
-    Players earn points by picking up items (5 points per distinct item type) and depositing them in their target location (variable points, e.g., 20 for USB drive). Items with no 
+    Players earn points by picking up items (5 points per distinct item type) and depositing them in their target location (variable points, e.g., 20 for USB drive). Items such as the Fob, Passport, and Wallet have no score value.
     First location to score: 1 (Bahen 1F).
     Commands: \texttt{take fob}.
 
     \item Copy the list you assigned to \texttt{scores\_demo} in the \texttt{simulation.py} file into this section of the report:
-
+    \begin{verbatim}
+    scores_demo = ["take fob", "score"]
+    \end{verbatim}
 
     \item Which parts of your code (file, class, function/method) are involved in handling the \texttt{score} functionality:
+    \texttt{adventure.py}: \texttt{AdventureGame.score} attribute, updated in \texttt{\_grab\_item} and \texttt{\_handle\_drop}. Displayed in \texttt{\_handle\_score}.
 \end{enumerate}
 
 \section*{Enhancements}
 \begin{enumerate}
-    \item Describe your enhancement \#1 here
+    \item \textbf{Locked Rooms System}
     \begin{itemize}
-        \item Brief description of what the enhancement is (if it's a puzzle, also describe what steps the player must take to solve it):
-        \item Complexity level (choose from low/medium/high):
-        \item Reasons you believe this is the complexity level (e.g., mention implementation details, how much code did you have to add/change from the baseline, what challenges did you face, etc.)
-        \item Name the parts of the code which are involved in this enhancement
-        \item Copy the list you assigned to \texttt{enhancements\_demo} in the \texttt{simulation.py} file into this section of the report:
+        \item Brief description: Certain locations (Morrison Hall, Robarts Library) are restricted. Players must possess specific items (Fob, T-Card) to enter.
+        \item Complexity level: Medium
+        \item Reasons: Required extending the \texttt{Location} entity with locking and item requirements, and modifying \texttt{_handle_go} to prevent unauthorized movement.
+        \item Code involved: \texttt{adventure.py} (\texttt{_handle_go}), \texttt{game_entities.py} (\texttt{Location}, \texttt{Item}).
+        \item Demo: \texttt{simple_enhancement_demo} in \texttt{simulation.py}.
     \end{itemize}
 
-    % Uncomment below section if you have more enhancements; copy-paste as needed
-    %\item Describe your enhancement here
-    %\begin{itemize}
-    %    \item Basic description of what the enhancement is:
-    %    \item Complexity level (low/medium/high):
-    %    \item Reasons you believe this is the complexity level (e.g., mention implementation details)
-    %    \item Name the parts of the code which are involved in this enhancement
-    %    \item Copy the list you assigned to \texttt{enhancements\_demo} in the \texttt{simulation.py} file into this section of the report:
-    %\end{itemize}
+    \item \textbf{Purchasing System}
+    \begin{itemize}
+        \item Brief description: Implemented a \texttt{buy} command to acquire items using other items (buying a T-Card requires a Wallet and Passport).
+        \item Complexity level: Low
+        \item Reasons: Implemented the \texttt{buy} verb with requirement checks and weight enforcement.
+        \item Code involved: \texttt{adventure.py} (\texttt{_handle_buy}), \texttt{game_data.json} (\texttt{required_items}).
+        \item Commands: \texttt{buy tcard}
+    \end{itemize}
+
+    \item \textbf{Colored Terminal Interface}
+    \begin{itemize}
+        \item Brief description: Added ANSI color coding to make the interface more readable and visually appealing. Different colors represent locations, items, commands.
+        \item Complexity level: Low
+        \item Reasons: Used various ANSI escape codes to improve the user experience.
+        \item Code involved: \texttt{adventure.py} (Constants).
+    \end{itemize}
+
+    \item \textbf{Map Display}
+    \begin{itemize}
+        \item Brief description: Added a \texttt{read} command to display a map board. Players can view a grid-based map of the campus.
+        \item Complexity level: Low
+        \item Reasons: Added a Map class that holds grid data and location keys, and added the \texttt{read map} command to display it.
+        \item Code involved: \texttt{adventure.py} (\texttt{_handle_read}), \texttt{game_entities.py} (\texttt{Map}).
+        \item Commands: \texttt{read map}
+    \end{itemize}
+
+    \item \textbf{Help Command}
+    \begin{itemize}
+        \item Brief description: Added a \texttt{help} command to display a comprehensive help menu that provides a listing of all available game verbs and their usage.
+        \item Complexity level: Low
+        \item Reasons: Required mapping all registered command handlers to a help menu, ensuring players can discover all game features easily.
+        \item Code involved: \texttt{adventure.py} (\texttt{_handle_help}).
+        \item Commands: \texttt{help}
+    \end{itemize}
 \end{enumerate}
 
 

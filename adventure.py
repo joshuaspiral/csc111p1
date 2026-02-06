@@ -109,7 +109,7 @@ class AdventureGame:
         self.found_items = set()
         self.deposited_items = set()
 
-        self._command_handers = {
+        self._command_handlers = {
             'help': self._handle_help,
             'look': self._handle_look,
             'inventory': self._handle_inventory,
@@ -129,7 +129,8 @@ class AdventureGame:
     def _load_game_data(filename: str) -> tuple[dict[int, Location], list[Item], Map]:
         """Load locations and items from a JSON file with the given filename and
         return a tuple consisting of (1) a dictionary of locations mapping each game location's ID to a Location object,
-        and (2) a list of all Item objects."""
+        (2) a list of all Item objects, and (3) a Map object.
+"""
 
         with open(filename, 'r') as f:
             data = json.load(f)  # This loads all the data from the JSON file
@@ -188,7 +189,7 @@ class AdventureGame:
         verb = parts[0]
         noun = parts[1] if len(parts) > 1 else ""
 
-        handler = self._command_handers.get(verb)
+        handler = self._command_handlers.get(verb)
 
         if handler is None:
             return "I don't understand that command."
@@ -196,10 +197,12 @@ class AdventureGame:
         if verb in MOVE_COMMANDS:
             self.moves += 1
 
+        result = handler(noun, log)
+
         loc = self.get_location()
         log.add_event(Event(loc.id_num, loc.long_description), command)
 
-        return handler(noun, log)
+        return result
 
     def _grab_item(self, item_name: str) -> str:
         """Attempt to take an item from the current location."""
@@ -300,6 +303,7 @@ class AdventureGame:
             if not any(item.name == required for item in self.inventory):
                 return next_loc.locked['message']
 
+        self.current_location_id = next_id
         return ""
 
     def _handle_take(self, noun: str, _: EventList) -> str:

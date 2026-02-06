@@ -137,30 +137,29 @@ if __name__ == "__main__":
     ]
     # Expected Log: Locations visited.
     # 1 -> 7 -> 1 -> 2 -> 5 -> 4 -> 5 -> 6 -> 5 -> 2 -> 3 -> 4 -> 5 -> 4
-    expected_log = [1, 7, 1, 2, 5, 4, 5, 6, 5, 2, 3, 4, 5, 4]
+    expected_log = [1, 1, 7, 7, 1, 2, 5, 4, 4, 5, 6, 6, 6, 6, 5, 2, 3, 3, 3, 4, 4, 4, 5, 5, 4, 4]
     sim = AdventureGameSimulation('game_data.json', 1, win_walkthrough)
     assert expected_log == sim.get_id_log(), f"Win walkthrough failed log: {sim.get_id_log()}"
     assert sim._game.check_win_condition(), "Win walkthrough failed to meet win condition"
-
     # Lose Demo (run out of moves by going back and forth)
     lose_demo = ["go east", "go west"] * 25
     expected_log = [1] + [2, 1] * 25
     sim = AdventureGameSimulation('game_data.json', 1, lose_demo)
-    assert expected_log == sim.get_id_log()
+    assert expected_log == sim.get_id_log(), f"Lose demo failed log: {sim.get_id_log()}"
     assert sim._game.check_lose_condition(), "Lose demo failed to meet lose condition"
 
     # Inventory Demo
     inventory_demo = ["take fob", "inventory"]
-    expected_log = [1]
+    expected_log = [1, 1, 1]
     sim = AdventureGameSimulation('game_data.json', 1, inventory_demo)
-    assert expected_log == sim.get_id_log()
+    assert expected_log == sim.get_id_log(), f"Inventory demo failed log: {sim.get_id_log()}"
     assert any(item.name == "fob" for item in sim._game.inventory), "Inventory demo failed to pick up item"
 
     # Scores Demo
     scores_demo = ["take fob", "score"]
-    expected_log = [1]
+    expected_log = [1, 1, 1]
     sim = AdventureGameSimulation('game_data.json', 1, scores_demo)
-    assert expected_log == sim.get_id_log()
+    assert expected_log == sim.get_id_log(), f"Scores demo failed log: {sim.get_id_log()}"
     assert sim._game.score > 0, "Scores demo failed to increase score"
 
     # Enhancement Demos
@@ -168,7 +167,7 @@ if __name__ == "__main__":
     # Attempt to enter Robarts without TCard (Fail), then with TCard (Success)
     simple_enhancement_demo = [
         "go east",      # To 2
-        "go north",     # To 3 (Fail - Locked). Log does not record this move.
+        "go north",     # To 3 (Fail - Locked). Stays at 2.
         "go west",      # Back to 1
         "take fob",
         "go west",      # To 7
@@ -187,10 +186,10 @@ if __name__ == "__main__":
         "go west",      # To 2
         "go north"      # To 3 (Success!)
     ]
-    # Log: 1 -> 2 -> 1 -> 7 -> 1 -> 2 -> 5 -> 4 -> 5 -> 6 -> 5 -> 2 -> 3
-    expected_log = [1, 2, 1, 7, 1, 2, 5, 4, 5, 6, 5, 2, 3]
+    # Log: [1 (init), 2, 2, 1, 1, 7, 7, 1, 2, 5, 4, 4, 5, 6, 6, 6, 6, 5, 2, 3]
+    expected_log = [1, 2, 2, 1, 1, 7, 7, 1, 2, 5, 4, 4, 5, 6, 6, 6, 6, 5, 2, 3]
     sim = AdventureGameSimulation('game_data.json', 1, simple_enhancement_demo)
-    assert expected_log == sim.get_id_log(), f"Enhancement demo failed: {sim.get_id_log()}"
+    assert expected_log == sim.get_id_log(), f"Enhancement demo failed log: {sim.get_id_log()}"
     assert sim._game.current_location_id == 3, "Enhancement demo failed to enter Robarts"
 
     print("All simulation tests passed!")

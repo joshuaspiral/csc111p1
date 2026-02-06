@@ -30,9 +30,9 @@ class AdventureGameSimulation:
     """A simulation of an adventure game playthrough.
     """
     # Private Instance Attributes:
-    #   - _game: The AdventureGame instance that this simulation uses.
+    #   - game: The AdventureGame instance that this simulation uses.
     #   - _events: A collection of the events to process during the simulation.
-    _game: AdventureGame
+    game: AdventureGame
     _events: EventList
 
     def __init__(self, game_data_file: str, initial_location_id: int, commands: list[str]) -> None:
@@ -44,10 +44,10 @@ class AdventureGameSimulation:
         - all commands in the given list are valid commands when starting from the location at initial_location_id
         """
         self._events = EventList()
-        self._game = AdventureGame(game_data_file, initial_location_id)
+        self.game = AdventureGame(game_data_file, initial_location_id)
 
         # First event
-        loc = self._game.get_location()
+        loc = self.game.get_location()
         self._events.add_event(Event(loc.id_num, loc.long_description), None)
 
         self.generate_events(commands)
@@ -61,7 +61,7 @@ class AdventureGameSimulation:
         - all commands in the given list are valid commands when starting from current_location
         """
         for cmd in commands:
-            self._game.process_command(cmd, self._events)
+            self.game.process_command(cmd, self._events)
 
     def get_id_log(self) -> list[int]:
         """
@@ -138,27 +138,27 @@ if __name__ == "__main__":
     expected_log = [1, 1, 7, 7, 1, 2, 5, 4, 4, 5, 6, 6, 6, 6, 5, 2, 3, 3, 3, 4, 4, 4, 5, 5, 4, 4]
     sim = AdventureGameSimulation('game_data.json', 1, win_walkthrough)
     assert expected_log == sim.get_id_log(), f"Win walkthrough failed log: {sim.get_id_log()}"
-    assert sim._game.check_win_condition(), "Win walkthrough failed to meet win condition"
+    assert sim.game.check_win_condition(), "Win walkthrough failed to meet win condition"
     # Lose Demo (run out of moves by going back and forth)
     lose_demo = ["go east", "go west"] * 25
     expected_log = [1] + [2, 1] * 25
     sim = AdventureGameSimulation('game_data.json', 1, lose_demo)
     assert expected_log == sim.get_id_log(), f"Lose demo failed log: {sim.get_id_log()}"
-    assert sim._game.check_lose_condition(), "Lose demo failed to meet lose condition"
+    assert sim.game.check_lose_condition(), "Lose demo failed to meet lose condition"
 
     # Inventory Demo
     inventory_demo = ["take fob", "inventory"]
     expected_log = [1, 1, 1]
     sim = AdventureGameSimulation('game_data.json', 1, inventory_demo)
     assert expected_log == sim.get_id_log(), f"Inventory demo failed log: {sim.get_id_log()}"
-    assert any(item.name == "fob" for item in sim._game.inventory), "Inventory demo failed to pick up item"
+    assert any(item.name == "fob" for item in sim.game.inventory), "Inventory demo failed to pick up item"
 
     # Scores Demo
     scores_demo = ["take fob", "score"]
     expected_log = [1, 1, 1]
     sim = AdventureGameSimulation('game_data.json', 1, scores_demo)
     assert expected_log == sim.get_id_log(), f"Scores demo failed log: {sim.get_id_log()}"
-    assert sim._game.score > 0, "Scores demo failed to increase score"
+    assert sim.game.score > 0, "Scores demo failed to increase score"
 
     # Enhancement Demos
     # 1. Simple puzzle - need tcard to enter Robarts
@@ -188,6 +188,6 @@ if __name__ == "__main__":
     expected_log = [1, 2, 2, 1, 1, 7, 7, 1, 2, 5, 4, 4, 5, 6, 6, 6, 6, 5, 2, 3]
     sim = AdventureGameSimulation('game_data.json', 1, simple_enhancement_demo)
     assert expected_log == sim.get_id_log(), f"Enhancement demo failed log: {sim.get_id_log()}"
-    assert sim._game.current_location_id == 3, "Enhancement demo failed to enter Robarts"
+    assert sim.game.current_location_id == 3, "Enhancement demo failed to enter Robarts"
 
     print("All simulation tests passed!")

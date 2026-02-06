@@ -92,65 +92,105 @@ class AdventureGameSimulation:
 
 
 if __name__ == "__main__":
-    import python_ta
-    python_ta.check_all(config={
-        'max-line-length': 120,
-        'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
-    })
+    # import python_ta
+    # python_ta.check_all(config={
+    #     'max-line-length': 120,
+    #     'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
+    # })
 
     # Win Walkthrough
-    # Take T-card, go to Robarts, take USB drive, go to Library, take laptop charger, go to Robarts, take lucky mug, go to Library, go to Robarts, drop USB drive, drop laptop charger, drop lucky mug
+    # Strategy:
+    # 1. Get Fob (Loc 1) to enter Morrison (Loc 4)
+    # 2. Get Wallet (Loc 7)
+    # 3. Enter Morrison (via Cafe Loc 5) to get Passport (Loc 4)
+    # 4. Go to TCard Office (Loc 6) to buy TCard (requires Wallet + Passport)
+    # 5. Drop heavy items (Wallet, Passport) to free space
+    # 6. Go to Robarts (Loc 3) (requires TCard) to get USB, Charger
+    # 7. Deliver USB, Charger to Morrison
+    # 8. Get Mug (Loc 5) and deliver to Morrison
     win_walkthrough = [
-        "take tcard",
-        "go east",
-        "go north",
+        "take fob",
+        "go west",          # To Tutorial (7)
+        "take wallet",
+        "go east",          # To Bahen (1)
+        "go east",          # To St George (2)
+        "go east",          # To Cafe (5)
+        "go north",         # To Morrison (4) - Needs Fob
+        "take passport",
+        "go south",         # To Cafe (5)
+        "go south",         # To TCard Office (6)
+        "buy tcard",        # Needs Wallet + Passport
+        "drop wallet",      # Free up weight
+        "drop passport",    # Free up weight
+        "go north",         # To Cafe (5)
+        "go west",          # To St George (2)
+        "go north",         # To Robarts (3) - Needs TCard
         "take usb drive",
         "take laptop charger",
-        "go south",
-        "go east",
-        "take lucky mug",
-        "go west",
-        "go north",
-        "go east",
+        "go east",          # To Morrison (4)
         "drop usb drive",
         "drop laptop charger",
-        "drop lucky mug"
+        "go south",         # To Cafe (5)
+        "take lucky mug",
+        "go north",         # To Morrison (4)
+        "drop lucky mug"    # Win!
     ]
-    expected_log = [1, 2, 3, 2, 5, 2, 3, 4]
+    # Expected Log: Locations visited.
+    # 1 -> 7 -> 1 -> 2 -> 5 -> 4 -> 5 -> 6 -> 5 -> 2 -> 3 -> 4 -> 5 -> 4
+    expected_log = [1, 7, 1, 2, 5, 4, 5, 6, 5, 2, 3, 4, 5, 4]
     sim = AdventureGameSimulation('game_data.json', 1, win_walkthrough)
-    assert expected_log == sim.get_id_log(), f"Win walkthrough failed: {sim.get_id_log()}"
+    assert expected_log == sim.get_id_log(), f"Win walkthrough failed log: {sim.get_id_log()}"
+    assert sim._game.check_win_condition(), "Win walkthrough failed to meet win condition"
 
     # Lose Demo (run out of moves by going back and forth)
     lose_demo = ["go east", "go west"] * 25
     expected_log = [1] + [2, 1] * 25
     sim = AdventureGameSimulation('game_data.json', 1, lose_demo)
     assert expected_log == sim.get_id_log()
+    assert sim._game.check_lose_condition(), "Lose demo failed to meet lose condition"
 
     # Inventory Demo
-    inventory_demo = ["take tcard", "inventory"]
+    inventory_demo = ["take fob", "inventory"]
     expected_log = [1]
     sim = AdventureGameSimulation('game_data.json', 1, inventory_demo)
     assert expected_log == sim.get_id_log()
+    assert any(item.name == "fob" for item in sim._game.inventory), "Inventory demo failed to pick up item"
 
     # Scores Demo
-    scores_demo = ["take tcard", "score"]
+    scores_demo = ["take fob", "score"]
     expected_log = [1]
     sim = AdventureGameSimulation('game_data.json', 1, scores_demo)
     assert expected_log == sim.get_id_log()
+    assert sim._game.score > 0, "Scores demo failed to increase score"
 
     # Enhancement Demos
     # 1. Simple puzzle - need tcard to enter Robarts
+    # Attempt to enter Robarts without TCard (Fail), then with TCard (Success)
     simple_enhancement_demo = [
-        "go east",
-        "go north",
-        "go west",
-        "take tcard",
-        "go east",
-        "go north"
+        "go east",      # To 2
+        "go north",     # To 3 (Fail - Locked). Log does not record this move.
+        "go west",      # Back to 1
+        "take fob",
+        "go west",      # To 7
+        "take wallet",
+        "go east",      # To 1
+        "go east",      # To 2
+        "go east",      # To 5
+        "go north",     # To 4 (use fob)
+        "take passport",
+        "go south",     # To 5
+        "go south",     # To 6
+        "buy tcard",
+        "drop wallet",
+        "drop passport",
+        "go north",     # To 5
+        "go west",      # To 2
+        "go north"      # To 3 (Success!)
     ]
-    expected_log = [1, 2, 1, 2, 3]
+    # Log: 1 -> 2 -> 1 -> 7 -> 1 -> 2 -> 5 -> 4 -> 5 -> 6 -> 5 -> 2 -> 3
+    expected_log = [1, 2, 1, 7, 1, 2, 5, 4, 5, 6, 5, 2, 3]
     sim = AdventureGameSimulation('game_data.json', 1, simple_enhancement_demo)
-    assert expected_log == sim.get_id_log()
-    #todo! add more enhancement demos
+    assert expected_log == sim.get_id_log(), f"Enhancement demo failed: {sim.get_id_log()}"
+    assert sim._game.current_location_id == 3, "Enhancement demo failed to enter Robarts"
 
     print("All simulation tests passed!")

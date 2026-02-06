@@ -180,6 +180,9 @@ class AdventureGame:
         if handler is None:
             return "I don't understand that command."
 
+        if verb in ('go', 'take', 'pick', 'drop', 'examine'):
+            self.moves += 1
+
         return handler(noun, log)
 
     def _handle_quit(self, _: str, __: EventList) -> str:
@@ -227,11 +230,9 @@ class AdventureGame:
 
         # If we reach here, movement is allowed
         self.current_location_id = next_id
-        self.moves += 1
         log.add_event(Event(next_loc.id_num, next_loc.long_description), command)
 
         return ""
-
 
     def _grab_item(self, item_name: str) -> str:
         """Attempt to take an item from the current location."""
@@ -301,7 +302,6 @@ class AdventureGame:
         if target:
             return target.description
         return "You don't see that here."
-
 
 
 if __name__ == "__main__":

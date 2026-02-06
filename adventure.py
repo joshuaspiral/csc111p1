@@ -62,7 +62,6 @@ class AdventureGame:
         - inventory: List of Item objects the player is carrying.
         - score: The player's current score.
         - moves: Number of moves the player has made.
-        - max_moves: Maximum moves allowed before losing.
         - found_items: Set of item names that have been picked up (for scoring).
         - deposited_items: Set of item names deposited at target (for scoring).
 
@@ -70,10 +69,13 @@ class AdventureGame:
         - self.current_location_id in self._locations
         - self.moves >= 0
         - self.score >= 0
-        - self.max_moves > 0
         - all(isinstance(item, Item) for item in self.inventory)
         - all(item.name in self.found_items for item in self.inventory
             if item.name in self.found_items)
+
+    Private Instance Attributes:
+        - _locations: a mapping from location id to Location object. This represents all the locations in the game.
+        - _items: a list of Item objects, representing all items in the game.
     """
 
     _locations: dict[int, Location]
@@ -84,7 +86,6 @@ class AdventureGame:
     inventory: list[Item]
     score: int
     moves: int
-    max_moves: int
     found_items: set[str]
     deposited_items: set[str]
 
@@ -104,7 +105,6 @@ class AdventureGame:
         self.inventory = []
         self.score = 0
         self.moves = 0
-        self.max_moves = MAX_MOVES
 
         self.found_items = set()
         self.deposited_items = set()
@@ -177,7 +177,7 @@ class AdventureGame:
 
     def check_lose_condition(self) -> bool:
         """Check if the player has lost by exceeding maximum moves."""
-        return self.moves >= self.max_moves
+        return self.moves >= MAX_MOVES
 
     def process_command(self, command: str, log: EventList) -> str:
         """Process a command, updating game state and log, and returning a result message."""
@@ -267,7 +267,7 @@ class AdventureGame:
         Return a string containing the players' score and current moves used.
         """
 
-        return f"Current Score: {self.score}\nMoves: {self.moves}/{self.max_moves}"
+        return f"Current Score: {self.score}\nMoves: {self.moves}/{MAX_MOVES}"
 
     def _handle_log(self, _: str, log: EventList) -> str:
         """ Handle the 'log' command.

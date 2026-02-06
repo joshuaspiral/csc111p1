@@ -92,14 +92,11 @@ class AdventureGameSimulation:
 
 
 if __name__ == "__main__":
-    # When you are ready to check your work with python_ta, uncomment the following lines.
-    # (Delete the "#" and space before each line.)
-    # IMPORTANT: keep this code indented inside the "if __name__ == '__main__'" block
-    # import python_ta
-    # python_ta.check_all(config={
-    #     'max-line-length': 120,
-    #     'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
-    # })
+    import python_ta
+    python_ta.check_all(config={
+        'max-line-length': 120,
+        'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
+    })
 
     # Win Walkthrough
     # Take T-card, go to Robarts, take USB drive, go to Library, take laptop charger, go to Robarts, take lucky mug, go to Library, go to Robarts, drop USB drive, drop laptop charger, drop lucky mug
@@ -119,7 +116,7 @@ if __name__ == "__main__":
         "drop laptop charger",
         "drop lucky mug"
     ]
-    expected_log = [1, 2, 3, 2, 5, 2, 3, 4] 
+    expected_log = [1, 2, 3, 2, 5, 2, 3, 4]
     sim = AdventureGameSimulation('game_data.json', 1, win_walkthrough)
     assert expected_log == sim.get_id_log(), f"Win walkthrough failed: {sim.get_id_log()}"
 
@@ -127,7 +124,7 @@ if __name__ == "__main__":
     lose_demo = ["go east", "go west"] * 25
     expected_log = [1] + [2, 1] * 25
     sim = AdventureGameSimulation('game_data.json', 1, lose_demo)
-    assert expected_log == sim.get_id_log()    
+    assert expected_log == sim.get_id_log()
 
     # Inventory Demo
     inventory_demo = ["take tcard", "inventory"]

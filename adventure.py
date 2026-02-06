@@ -354,6 +354,11 @@ class AdventureGame:
         if any(i.name == noun for i in self.inventory):
             return f"You already have {noun}."
 
+        if item.heavy:
+            heavy_count = sum(1 for i in self.inventory if i.heavy)
+            if heavy_count >= MAX_ITEM:
+                return "You can't carry more than 2 heavy items."
+
         self.inventory.append(item)
         if noun in loc.items:
             loc.items.remove(noun)
@@ -440,7 +445,7 @@ if __name__ == "__main__":
 
         # Display possible actions
         print(f"\n{MAGENTA}{'─'*40}{RESET}")
-        print(f"{BOLD}Commands:{RESET} {DIM}look, inventory, score, log, quit{RESET}")
+        print(f"{BOLD}Commands:{RESET} {DIM}help, look, inventory, score, log, quit{RESET}")
         print(f"{BOLD}Movement:{RESET}", end=" ")
         actions = list(location.available_commands.keys())
         print(f"{GREEN}{', '.join(actions)}{RESET}" if actions else f"{DIM}(none){RESET}")

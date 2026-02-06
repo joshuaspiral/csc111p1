@@ -31,6 +31,7 @@ class Location:
         - long_description: A detailed description of the location (for the first visit).
         - available_commands: A dict mapping valid command strings (e.g., 'go north') to the ID of the destination location.
         - items: A list of names of items currently present in this location.
+        - locked: Optional, A dict mapping what item is required to enter and the message displayed on attempted entry without item.
         - visited: A boolean indicating whether the player has visited this location at least once.
 
     Representation Invariants:
@@ -48,6 +49,7 @@ class Location:
     long_description: str
     available_commands: dict[str, int]
     items: list[str]
+    locked: dict[str, str] | None = None
     visited: bool = False
 
 

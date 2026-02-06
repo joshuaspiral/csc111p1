@@ -128,7 +128,7 @@ class AdventureGame:
         locations = {}
         for loc_data in data['locations']:  # Go through each element associated with the 'locations' key in the file
             location_obj = Location(loc_data['id'], loc_data['brief_description'], loc_data['long_description'],
-                                    loc_data['available_commands'], loc_data['items'])
+                                    loc_data['available_commands'], loc_data['items'], loc_data.get('locked'))
             locations[loc_data['id']] = location_obj
 
         items = []
@@ -217,17 +217,21 @@ class AdventureGame:
             return "You can't go that way."
 
         next_id = loc.available_commands[command]
+        next_loc = self.get_location(next_id)
 
-        # SImple Puzzle: Entering Robarts (ID 3) requires 'tcard'
-        if next_id == 3 and not any(i.name == 'tcard' for i in self.inventory):
-            return "You try to enter Robarts Library, but the turnstile gate is locked.\nYou need your T-Card to tap in."
+        # Locked room check
+        if next_loc.locked is not None:
+            required = next_loc.locked['required_item']
+            if not any(item.name == required for item in self.inventory):
+                return next_loc.locked['message']
 
+        # If we reach here, movement is allowed
         self.current_location_id = next_id
         self.moves += 1
+        log.add_event(Event(next_loc.id_num, next_loc.long_description), command)
 
-        new_loc = self.get_location()
-        log.add_event(Event(new_loc.id_num, new_loc.long_description), direction)
         return ""
+
 
     def _grab_item(self, item_name: str) -> str:
         """Attempt to take an item from the current location."""

@@ -26,9 +26,6 @@ from dataclasses import dataclass
 from typing import Optional
 
 
-# TODO: Copy/paste your A1 event_logger code below, and modify it if needed to fit your game
-
-
 @dataclass
 class Event:
     """
@@ -53,10 +50,11 @@ class EventList:
     A linked list of game events.
 
     Instance Attributes:
-        - # TODO add descriptions of instance attributes here
+        - first: the first event in the list, or none if the list is empty
+        - last: the last event in the list, or none if the list is empty
 
     Representation Invariants:
-        - # TODO add any appropriate representation invariants, if needed
+        - (self.first is None) == (self.last is None)
     """
     first: Optional[Event]
     last: Optional[Event]
@@ -77,7 +75,6 @@ class EventList:
                 print(f"Location: {curr.id_num}, Command: {curr.next_command}")
             curr = curr.next
 
-    # TODO: Complete the methods below, based on the given descriptions.
     def is_empty(self) -> bool:
         """Return whether this event list is empty."""
 

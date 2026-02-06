@@ -33,7 +33,7 @@ TARGET_LOCATION = 4
 MOVE_COMMANDS = ('go', 'take', 'pick', 'drop', 'examine', 'read')
 
 # ANSI Color Codes
-"""ANSI escape codes for terminal colors."""
+# ANSI escape codes for terminal colors.
 RESET = "\033[0m"
 BOLD = "\033[1m"
 DIM = "\033[2m"
@@ -201,6 +201,33 @@ class AdventureGame:
 
         return handler(noun, log)
 
+    def _grab_item(self, item_name: str) -> str:
+        """Attempt to take an item from the current location."""
+
+        loc = self.get_location()
+
+        if item_name not in loc.items:
+            return "You don't see that here."
+
+        item = self.find_item_by_name(item_name)
+        if item is None:
+            return "Error: Item data not found."
+
+        if item.heavy:
+            heavy_count = sum(1 for i in self.inventory if i.heavy)
+            if heavy_count >= MAX_ITEM:
+                return "You can't carry more than 2 heavy items."
+
+        loc.items.remove(item_name)
+        self.inventory.append(item)
+
+        if item_name not in self.found_items:
+            self.score += FIND_POINT_VALUE
+            self.found_items.add(item_name)
+
+        return f"You picked up the {item_name}."
+
+    # Handler Functions
     def _handle_quit(self, _: str, __: EventList) -> str:
         """ Handle the 'quit' command.
 
@@ -274,32 +301,6 @@ class AdventureGame:
                 return next_loc.locked['message']
 
         return ""
-
-    def _grab_item(self, item_name: str) -> str:
-        """Attempt to take an item from the current location."""
-
-        loc = self.get_location()
-
-        if item_name not in loc.items:
-            return "You don't see that here."
-
-        item = self.find_item_by_name(item_name)
-        if item is None:
-            return "Error: Item data not found."
-
-        if item.heavy:
-            heavy_count = sum(1 for i in self.inventory if i.heavy)
-            if heavy_count >= MAX_ITEM:
-                return "You can't carry more than 2 heavy items."
-
-        loc.items.remove(item_name)
-        self.inventory.append(item)
-
-        if item_name not in self.found_items:
-            self.score += FIND_POINT_VALUE
-            self.found_items.add(item_name)
-
-        return f"You picked up the {item_name}."
 
     def _handle_take(self, noun: str, _: EventList) -> str:
         """ Handle the 'take' command.
@@ -451,11 +452,11 @@ class AdventureGame:
 
 
 if __name__ == "__main__":
-    # import python_ta
-    # python_ta.check_all(config={
-    #     'max-line-length': 120,
-    #     'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
-    # })
+    import python_ta
+    python_ta.check_all(config={
+        'max-line-length': 120,
+        'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
+    })
 
     game_log = EventList()
     game = AdventureGame('game_data.json', 1)

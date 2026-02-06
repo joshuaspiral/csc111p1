@@ -29,9 +29,9 @@ class Location:
         - id_num: The integer identifier for this location.
         - brief_description: A short description of the location (for repeated visits).
         - long_description: A detailed description of the location (for the first visit).
-        - available_commands: A dict mapping valid command strings (e.g., 'go north') to the ID of the destination location.
+        - available_commands: A dict mapping valid command strings (e.g., 'look') to the ID of the destination location.
         - items: A list of names of items currently present in this location.
-        - locked: Optional, A dict mapping what item is required to enter and the message displayed on attempted entry without item.
+        - locked: Optional, A dict mapping item required to enter and the message displayed on illegal entry.
         - visited: A boolean indicating whether the player has visited this location at least once.
 
     Representation Invariants:
@@ -90,12 +90,26 @@ class Item:
     required_items: list[str] | None = None
     heavy: bool = True
 
+
 @dataclass
 class Map:
+    """A map in our text adventure game world
+
+    Instance Attributes:
+    - key: A dict mapping the id location and the location name for the map
+    - grid: A string representation of the game map
+
+    Representation Invariants:
+        - all(isinstance(k, str) for k in self.key)
+        - all(isinstance(v, str) for v in self.key.values())
+        - self.grid is a non-empty string
+    """
     key: dict[str, str]
     grid: str
 
     def display(self) -> str:
+        """Return a formatted string representation of the map, including the map key and the grid layout."""
+
         key_lines = ", ".join(f"{key}: {value}" for key, value in self.key.items())
         return f"📜 MAP OF THE AREA 📜\nKey: {key_lines}\n{self.grid}"
 

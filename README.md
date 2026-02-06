@@ -10,4 +10,4 @@ CSC111 Project 1 Winter 2026
 - [x] add "locked" attribute
 - [x] add extra feature
 - [ ] small refactoring + pythonTA
-- [ ] fix logger!!!
+- [x] fix logger!!!

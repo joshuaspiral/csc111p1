@@ -30,6 +30,7 @@ MAX_ITEM = 2
 FIND_POINT_VALUE = 5
 REQUIRED_ITEMS = ["usb drive", "laptop charger", "lucky mug"]
 TARGET_LOCATION = 4
+MOVE_COMMANDS = ('go', 'take', 'pick', 'drop', 'examine', 'read')
 
 # ANSI Color Codes
 """ANSI escape codes for terminal colors."""
@@ -192,8 +193,11 @@ class AdventureGame:
         if handler is None:
             return "I don't understand that command."
 
-        if verb in ('go', 'take', 'pick', 'drop', 'examine', 'read'):
+        if verb in MOVE_COMMANDS:
             self.moves += 1
+
+        loc = self.get_location()
+        log.add_event(Event(loc.id_num, loc.long_description), command)
 
         return handler(noun, log)
 
@@ -244,7 +248,7 @@ class AdventureGame:
         log.display_events()
         return ""
 
-    def _handle_go(self, direction: str, log: EventList) -> str:
+    def _handle_go(self, direction: str, __: EventList) -> str:
         """ Handle the 'go' command.
 
         Go to the location specified unless not accessible to player either because it is not a valid command or
@@ -268,10 +272,6 @@ class AdventureGame:
             required = next_loc.locked['required_item']
             if not any(item.name == required for item in self.inventory):
                 return next_loc.locked['message']
-
-        # If we reach here, movement is allowed
-        self.current_location_id = next_id
-        log.add_event(Event(next_loc.id_num, next_loc.long_description), command)
 
         return ""
 
@@ -451,11 +451,11 @@ class AdventureGame:
 
 
 if __name__ == "__main__":
-    import python_ta
-    python_ta.check_all(config={
-        'max-line-length': 120,
-        'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
-    })
+    # import python_ta
+    # python_ta.check_all(config={
+    #     'max-line-length': 120,
+    #     'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
+    # })
 
     game_log = EventList()
     game = AdventureGame('game_data.json', 1)

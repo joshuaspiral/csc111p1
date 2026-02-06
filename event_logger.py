@@ -71,7 +71,10 @@ class EventList:
         """Display all events in chronological order."""
         curr = self.first
         while curr:
-            print(f"Location: {curr.id_num}, Command: {curr.next_command}")
+            if curr.next_command is None:
+                print(f"Location: {curr.id_num}")
+            else:
+                print(f"Location: {curr.id_num}, Command: {curr.next_command}")
             curr = curr.next
 
     # TODO: Complete the methods below, based on the given descriptions.

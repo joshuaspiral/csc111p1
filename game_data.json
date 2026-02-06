@@ -16,8 +16,8 @@
     {
       "id": 7,
       "name": "CSC111 Tutorial",
-      "brief_description": "You are in your tutorial room. The first floor of the Bahen Center is to the West. Tracing back your steps, you go back to the desk you sat at and find your wallet! Uh oh! Aren't you glad no one took that?",
-      "long_description": "You go to the elevators and remember you had a CSC111 Tutorial yesterday, you were in such a rush to leave so you could finish your project. You wonder if you left anything there. You go up to the second floor and enter the room. The first floor of the Bahen Center is to the West.",
+      "brief_description": "You are in your tutorial room. The first floor of the Bahen Center is to the East. Tracing back your steps, you go back to the desk you sat at and find your wallet! Uh oh! Aren't you glad no one took that?",
+      "long_description": "You go to the elevators and remember you had a CSC111 Tutorial yesterday, you were in such a rush to leave so you could finish your project. You wonder if you left anything there. You go up to the second floor and enter the room. The first floor of the Bahen Center is to the East.",
       "available_commands": {
         "go east": 1
       },

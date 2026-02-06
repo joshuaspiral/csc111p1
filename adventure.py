@@ -413,7 +413,7 @@ class AdventureGame:
         inventory_items = {i.name for i in self.inventory}
         missing = [req for req in required_items if req not in inventory_items]
         if missing:
-            return f"You need {', '.join(missing)} to buy {noun}."
+            return f"You don't have the required item(s) to buy a tcard!"
 
         if any(i.name == noun for i in self.inventory):
             return f"You already have {noun}."

@@ -105,6 +105,7 @@ class AdventureGame:
         self.deposited_items = set()
 
         self._command_handers = {
+            'help': self._handle_help,
             'look': self._handle_look,
             'inventory': self._handle_inventory,
             'score': self._handle_score,
@@ -359,6 +360,25 @@ class AdventureGame:
 
         return f"You bought {noun}!"
 
+    def _handle_help(self, _: str, __: EventList) -> str:
+        """Display all available command keywords (not location-specific)."""
+        return (
+            "Available commands:\n"
+            "  help                - Show this help message\n"
+            "  look                - Look around the current location\n"
+            "  go <direction>      - Move in a direction (e.g., go north)\n"
+            "  take <item>         - Take an item\n"
+            "  pick up <item>      - Pick up an item\n"
+            "  drop <item>         - Drop an item\n"
+            "  examine <item>      - Examine an item\n"
+            "  inventory           - View your inventory\n"
+            "  score               - View your score and move count\n"
+            "  log                 - View your movement log\n"
+            "  read <object>       - Read something (e.g., read map)\n"
+            "  buy <item>          - Buy an item (if available)\n"
+            "  quit                - Quit the game"
+        )
+
 
 if __name__ == "__main__":
     # When you are ready to check your work with python_ta, uncomment the following lines.
@@ -380,6 +400,8 @@ if __name__ == "__main__":
     print(f"{BOLD}{CYAN}{'='*60}{RESET}")
     print(f"{DIM}Find your USB drive, laptop charger, and lucky mug!{RESET}")
     print(f"{DIM}Return them to your dorm before the 1pm deadline.{RESET}\n")
+
+    print(f"{DIM}If you need help at any time, just type: help{RESET}\n")
 
     # Log starting location
     start_loc = game.get_location()
@@ -437,6 +459,8 @@ if __name__ == "__main__":
             elif "don't" in result_msg or "aren't" in result_msg or "locked" in result_msg:
                 print(f"{RED}{result_msg}{RESET}")
             elif "Inventory" in result_msg or "Score" in result_msg:
+                print(f"{CYAN}{result_msg}{RESET}")
+            elif "Available commands" in result_msg:
                 print(f"{CYAN}{result_msg}{RESET}")
             else:
                 print(result_msg)

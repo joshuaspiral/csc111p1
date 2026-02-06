@@ -53,17 +53,16 @@ BG_GREEN = "\033[42m"
 BG_RED = "\033[41m"
 
 
-class AdventureGame:
-    """A text adventure game class storing all location, item and map data.
+class Player:
+    """Stores all player-related state for the AdventureGame.
 
     Instance Attributes:
-        - current_location_id: The ID of the player's current location.
-        - ongoing: Whether the game is still in progress.
-        - inventory: List of Item objects the player is carrying.
-        - score: The player's current score.
-        - moves: Number of moves the player has made.
-        - found_items: Set of item names that have been picked up (for scoring).
-        - deposited_items: Set of item names deposited at target (for scoring).
+    - location_id: The ID of the player's current location.
+    - inventory: List of Item objects the player is carrying.
+    - score: The player's current score.
+    - moves: Number of moves the player has made.
+    - found_items: Set of item names that have been picked up (for scoring).
+    - deposited_items: Set of item names deposited at target (for scoring).
 
     Representation Invariants:
         - self.current_location_id in self._locations
@@ -72,6 +71,30 @@ class AdventureGame:
         - all(isinstance(item, Item) for item in self.inventory)
         - all(item.name in self.found_items for item in self.inventory
             if item.name in self.found_items)
+    """
+
+    location_id: int
+    inventory: list[Item]
+    score: int
+    moves: int
+    found_items: set[str]
+    deposited_items: set[str]
+
+    def __init__(self, start_location: int) -> None:
+        self.location_id = start_location
+        self.inventory = []
+        self.score = 0
+        self.moves = 0
+        self.found_items = set()
+        self.deposited_items = set()
+
+
+class AdventureGame:
+    """A text adventure game class storing all location, item and map data.
+
+    Instance Attributes:
+        - ongoing: Whether the game is still in progress.
+
 
     Private Instance Attributes:
         - _locations: a mapping from location id to Location object. This represents all the locations in the game.
@@ -83,13 +106,8 @@ class AdventureGame:
     _map: Map
     _command_handlers: dict[str, object]
 
-    current_location_id: int
     ongoing: bool
-    inventory: list[Item]
-    score: int
-    moves: int
-    found_items: set[str]
-    deposited_items: set[str]
+    player: Player
 
     def __init__(self, game_data_file: str, initial_location_id: int) -> None:
         """
@@ -101,15 +119,9 @@ class AdventureGame:
         - game_data_file is the filename of a valid game data JSON file
         """
         self._locations, self._items, self._map = self._load_game_data(game_data_file)
-        self.current_location_id = initial_location_id
 
+        self.player = Player(initial_location_id)
         self.ongoing = True
-        self.inventory = []
-        self.score = 0
-        self.moves = 0
-
-        self.found_items = set()
-        self.deposited_items = set()
 
         self._command_handlers = {
             'help': self._handle_help,
@@ -162,7 +174,7 @@ class AdventureGame:
         """
 
         if loc_id is None:
-            return self._locations[self.current_location_id]
+            return self._locations[self.player.location_id]
         return self._locations[loc_id]
 
     def find_item_by_name(self, name: str) -> Optional[Item]:
@@ -179,7 +191,7 @@ class AdventureGame:
 
     def check_lose_condition(self) -> bool:
         """Check if the player has lost by exceeding maximum moves."""
-        return self.moves >= MAX_MOVES
+        return self.player.moves >= MAX_MOVES
 
     def process_command(self, command: str, log: EventList) -> str:
         """Process a command, updating game state and log, and returning a result message."""
@@ -197,7 +209,7 @@ class AdventureGame:
             return "I don't understand that command."
 
         if verb in MOVE_COMMANDS:
-            self.moves += 1
+            self.player.moves += 1
 
         result = handler(noun, log)
 
@@ -219,16 +231,16 @@ class AdventureGame:
             return "Error: Item data not found."
 
         if item.heavy:
-            heavy_count = sum(1 for i in self.inventory if i.heavy)
+            heavy_count = sum(1 for i in self.player.inventory if i.heavy)
             if heavy_count >= MAX_ITEM:
                 return "You can't carry more than 2 heavy items."
 
         loc.items.remove(item_name)
-        self.inventory.append(item)
+        self.player.inventory.append(item)
 
-        if item_name not in self.found_items:
-            self.score += FIND_POINT_VALUE
-            self.found_items.add(item_name)
+        if item_name not in self.player.found_items:
+            self.player.score += FIND_POINT_VALUE
+            self.player.found_items.add(item_name)
 
         return f"You picked up the {item_name}."
 
@@ -256,10 +268,10 @@ class AdventureGame:
 
         lines = ["Inventory:"]
 
-        if not self.inventory:
+        if not self.player.inventory:
             lines.append("  (empty)")
         else:
-            for item in self.inventory:
+            for item in self.player.inventory:
                 lines.append(f"  - {item.name}")
         return "\n".join(lines)
 
@@ -269,7 +281,7 @@ class AdventureGame:
         Return a string containing the players' score and current moves used.
         """
 
-        return f"Current Score: {self.score}\nMoves: {self.moves}/{MAX_MOVES}"
+        return f"Current Score: {self.player.score}\nMoves: {self.player.moves}/{MAX_MOVES}"
 
     def _handle_log(self, _noun: str, log: EventList) -> str:
         """ Handle the 'log' command.
@@ -302,10 +314,10 @@ class AdventureGame:
         # Locked room check
         if next_loc.locked is not None:
             required = next_loc.locked['required_item']
-            if not any(item.name == required for item in self.inventory):
+            if not any(item.name == required for item in self.player.inventory):
                 return next_loc.locked['message']
 
-        self.current_location_id = next_id
+        self.player.location_id = next_id
         return ""
 
     def _handle_take(self, noun: str, _log: EventList) -> str:
@@ -342,19 +354,19 @@ class AdventureGame:
         item = None
         loc = self.get_location()
 
-        for it in self.inventory:
+        for it in self.player.inventory:
             if it.name.lower() == noun.lower():
                 item = it
                 break
 
         if item:
-            self.inventory.remove(item)
+            self.player.inventory.remove(item)
             loc.items.append(item.name)
             msg = f"You dropped the {noun}."
-            if loc.id_num == item.target_position and item.name not in self.deposited_items:
+            if loc.id_num == item.target_position and item.name not in self.player.deposited_items:
                 msg += f"\nYou deposited the {item.name} in the correct place! (+{item.target_points} points)"
-                self.score += item.target_points
-                self.deposited_items.add(item.name)
+                self.player.score += item.target_points
+                self.player.deposited_items.add(item.name)
             return msg
         return "You aren't carrying that."
 
@@ -367,7 +379,7 @@ class AdventureGame:
         target = None
         loc = self.get_location()
 
-        for it in self.inventory:
+        for it in self.player.inventory:
             if it.name.lower() == noun.lower():
                 target = it
                 break
@@ -417,20 +429,20 @@ class AdventureGame:
             return f"{noun} is not available for purchase."
 
         required_items = item.required_items if item.required_items is not None else []
-        inventory_items = {i.name for i in self.inventory}
+        inventory_items = {i.name for i in self.player.inventory}
         missing = [req for req in required_items if req not in inventory_items]
         if missing:
             return "You don't have the required item(s) to buy a tcard!"
 
-        if any(i.name == noun for i in self.inventory):
+        if any(i.name == noun for i in self.player.inventory):
             return f"You already have {noun}."
 
         if item.heavy:
-            heavy_count = sum(1 for i in self.inventory if i.heavy)
+            heavy_count = sum(1 for i in self.player.inventory if i.heavy)
             if heavy_count >= MAX_ITEM:
                 return "You can't carry more than 2 heavy items."
 
-        self.inventory.append(item)
+        self.player.inventory.append(item)
         if noun in loc.items:
             loc.items.remove(noun)
 
@@ -488,7 +500,7 @@ if __name__ == "__main__":
         if game.check_win_condition():
             print(f"\n{BOLD}{BG_GREEN}{WHITE} CONGRATULATIONS! {RESET}")
             print(f"{GREEN}You have returned all the missing items to your dorm room!{RESET}")
-            print(f"{BOLD}Final Score: {YELLOW}{game.score}{RESET}")
+            print(f"{BOLD}Final Score: {YELLOW}{game.player.score}{RESET}")
             game.ongoing = False
             break
 

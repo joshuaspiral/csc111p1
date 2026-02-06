@@ -80,6 +80,8 @@ class AdventureGame:
 
     _locations: dict[int, Location]
     _items: list[Item]
+    _map: Map
+    _command_handlers: dict[str, object]
 
     current_location_id: int
     ongoing: bool
@@ -142,7 +144,7 @@ class AdventureGame:
             locations[loc_data['id']] = location_obj
 
         items = []
-        # TODO: Add Item objects to the items list; your code should be structured similarly to the loop above
+
         for item_data in data['items']:
             item_obj = Item(item_data['name'], item_data['description'], item_data['start_position'],
                             item_data['target_position'], item_data['target_points'], item_data.get('required_items'),
@@ -158,7 +160,7 @@ class AdventureGame:
         """Return Location object associated with the provided location ID.
         If no ID is provided, return the Location object associated with the current location.
         """
-        # TODO: Complete this method as specified
+
         if loc_id is None:
             return self._locations[self.current_location_id]
         return self._locations[loc_id]
@@ -231,7 +233,7 @@ class AdventureGame:
         return f"You picked up the {item_name}."
 
     # Handler Functions
-    def _handle_quit(self, _: str, __: EventList) -> str:
+    def _handle_quit(self, _noun: str, _log: EventList) -> str:
         """ Handle the 'quit' command.
 
         Quit the game and return a string informing user.
@@ -239,14 +241,14 @@ class AdventureGame:
         self.ongoing = False
         return "Quitting game."
 
-    def _handle_look(self, _: str, __: EventList) -> str:
+    def _handle_look(self, _noun: str, _log: EventList) -> str:
         """ Handle the 'look' command.
 
         Return the long description of the location the player is currently at.
         """
         return self.get_location().long_description
 
-    def _handle_inventory(self, _: str, __: EventList) -> str:
+    def _handle_inventory(self, _noun: str, _log: EventList) -> str:
         """ Handle the 'inventory' command.
 
         Return a formatted string listing all items currently carried by the player.
@@ -261,7 +263,7 @@ class AdventureGame:
                 lines.append(f"  - {item.name}")
         return "\n".join(lines)
 
-    def _handle_score(self, _: str, __: EventList) -> str:
+    def _handle_score(self, _noun: str, _log: EventList) -> str:
         """ Handle the 'score' command.
 
         Return a string containing the players' score and current moves used.
@@ -269,7 +271,7 @@ class AdventureGame:
 
         return f"Current Score: {self.score}\nMoves: {self.moves}/{MAX_MOVES}"
 
-    def _handle_log(self, _: str, log: EventList) -> str:
+    def _handle_log(self, _noun: str, log: EventList) -> str:
         """ Handle the 'log' command.
 
         Display all the events that have taken place in the current game.
@@ -278,7 +280,7 @@ class AdventureGame:
         log.display_events()
         return ""
 
-    def _handle_go(self, direction: str, __: EventList) -> str:
+    def _handle_go(self, direction: str, _log: EventList) -> str:
         """ Handle the 'go' command.
 
         Go to the location specified unless not accessible to player either because it is not a valid command or
@@ -306,7 +308,7 @@ class AdventureGame:
         self.current_location_id = next_id
         return ""
 
-    def _handle_take(self, noun: str, _: EventList) -> str:
+    def _handle_take(self, noun: str, _log: EventList) -> str:
         """ Handle the 'take' command.
 
         Attempts to take the item.
@@ -316,7 +318,7 @@ class AdventureGame:
             return "Take what?"
         return self._grab_item(noun)
 
-    def _handle_pick(self, noun: str, _: EventList) -> str:
+    def _handle_pick(self, noun: str, _log: EventList) -> str:
         """ Handle the 'pick up' command.
 
         Attempts to pick up the item.
@@ -331,7 +333,7 @@ class AdventureGame:
 
         return self._grab_item(item_name)
 
-    def _handle_drop(self, noun: str, __: EventList) -> str:
+    def _handle_drop(self, noun: str, _log: EventList) -> str:
         """ Handle the 'drop' command.
 
         Attempts to drop the item.
@@ -356,7 +358,7 @@ class AdventureGame:
             return msg
         return "You aren't carrying that."
 
-    def _handle_examine(self, noun: str, __: EventList) -> str:
+    def _handle_examine(self, noun: str, _log: EventList) -> str:
         """ Handle the 'examine' command.
 
         Attempts to return the description of the item being examined by the player.
@@ -375,7 +377,7 @@ class AdventureGame:
             return target.description
         return "You don't see that here."
 
-    def _handle_read(self, noun: str, __: EventList) -> str:
+    def _handle_read(self, noun: str, _log: EventList) -> str:
         """ Handle the 'read' command.
 
         Will return a string containing the contents the desired item to be read if it can be read.
@@ -398,7 +400,7 @@ class AdventureGame:
 
         return ""
 
-    def _handle_buy(self, noun: str, __: EventList) -> str:
+    def _handle_buy(self, noun: str, _log: EventList) -> str:
         """ Handle the 'buy' command.
 
         Attempts to buy the item if it can be bought.
@@ -418,7 +420,7 @@ class AdventureGame:
         inventory_items = {i.name for i in self.inventory}
         missing = [req for req in required_items if req not in inventory_items]
         if missing:
-            return f"You don't have the required item(s) to buy a tcard!"
+            return "You don't have the required item(s) to buy a tcard!"
 
         if any(i.name == noun for i in self.inventory):
             return f"You already have {noun}."
@@ -434,7 +436,7 @@ class AdventureGame:
 
         return f"You bought {noun}!"
 
-    def _handle_help(self, _: str, __: EventList) -> str:
+    def _handle_help(self, _noun: str, _log: EventList) -> str:
         """Display all available command keywords (not location-specific)."""
 
         return (
@@ -467,9 +469,9 @@ if __name__ == "__main__":
     menu = ["look", "inventory", "score", "log", "quit"]
 
     # Welcome banner
-    print(f"\n{BOLD}{CYAN}{'='*60}{RESET}")
+    print(f"\n{BOLD}{CYAN}{'=' * 60}{RESET}")
     print(f"{BOLD}{YELLOW}  CSC111 TEXT ADVENTURE: The Missing Project Files {RESET}")
-    print(f"{BOLD}{CYAN}{'='*60}{RESET}")
+    print(f"{BOLD}{CYAN}{'=' * 60}{RESET}")
     print(f"{DIM}Find your USB drive, laptop charger, and lucky mug!{RESET}")
     print(f"{DIM}Return them to your dorm before the 1pm deadline.{RESET}\n")
 
@@ -511,7 +513,7 @@ if __name__ == "__main__":
             print(f"\n{YELLOW}👀 You see: {BOLD}{', '.join(location.items)}{RESET}")
 
         # Display possible actions
-        print(f"\n{MAGENTA}{'─'*40}{RESET}")
+        print(f"\n{MAGENTA}{'─' * 40}{RESET}")
         print(f"{BOLD}Commands:{RESET} {DIM}look, inventory, score, log, quit{RESET}")
         print(f"{BOLD}Movement:{RESET}", end=" ")
         actions = list(location.available_commands.keys())
@@ -520,7 +522,7 @@ if __name__ == "__main__":
         # Get input
         choice = input(f"\n{BOLD}{WHITE}> {RESET}").lower().strip()
 
-        print(f"{DIM}{'─'*40}{RESET}")
+        print(f"{DIM}{'─' * 40}{RESET}")
 
         # Process command
         result_msg = game.process_command(choice, game_log)

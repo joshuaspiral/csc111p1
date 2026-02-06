@@ -93,7 +93,8 @@
       "brief_description": "",
       "long_description": "",
       "available_commands": {
-        "go north": 5
+        "go north": 5,
+        "buy tcard": 6
       },
       "items": [
         "tcard"
@@ -150,5 +151,18 @@
       "target_position": 4,
       "target_points": 15
     }
-  ]
+  ],
+  "map": {
+    "key": {
+      "1": "Bahen 1F",
+      "2": "St. George Street",
+      "3": "Robarts Library",
+      "4": "Morrison Hall",
+      "5": "Cafe Reznikoff",
+      "6": "TCard Office",
+      "7": "CSC111 Tutorial",
+      "x": "No location"
+    },
+    "grid": "x x 3 4\n7 1 2 5\nx x x 6"
+  }
 }

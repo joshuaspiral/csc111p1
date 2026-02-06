@@ -21,7 +21,7 @@ from __future__ import annotations
 import json
 from typing import Optional
 
-from game_entities import Location, Item
+from game_entities import Location, Item, Map
 from event_logger import Event, EventList
 
 # Game Constants
@@ -91,7 +91,7 @@ class AdventureGame:
         Preconditions:
         - game_data_file is the filename of a valid game data JSON file
         """
-        self._locations, self._items = self._load_game_data(game_data_file)
+        self._locations, self._items, self._map = self._load_game_data(game_data_file)
         self.current_location_id = initial_location_id
 
         self.ongoing = True
@@ -113,11 +113,12 @@ class AdventureGame:
             'take': self._handle_take,
             'pick': self._handle_pick,
             'drop': self._handle_drop,
-            'examine': self._handle_examine
+            'examine': self._handle_examine,
+            'read': self._handle_read
         }
 
     @staticmethod
-    def _load_game_data(filename: str) -> tuple[dict[int, Location], list[Item]]:
+    def _load_game_data(filename: str) -> tuple[dict[int, Location], list[Item], Map]:
         """Load locations and items from a JSON file with the given filename and
         return a tuple consisting of (1) a dictionary of locations mapping each game location's ID to a Location object,
         and (2) a list of all Item objects."""
@@ -138,7 +139,10 @@ class AdventureGame:
                             item_data['target_position'], item_data['target_points'])
             items.append(item_obj)
 
-        return locations, items
+        map_data = data.get("map", {"key": {}, "grid": ""})
+        map_obj = Map(map_data["key"], map_data["grid"])
+
+        return locations, items, map_obj
 
     def get_location(self, loc_id: Optional[int] = None) -> Location:
         """Return Location object associated with the provided location ID.
@@ -180,7 +184,7 @@ class AdventureGame:
         if handler is None:
             return "I don't understand that command."
 
-        if verb in ('go', 'take', 'pick', 'drop', 'examine'):
+        if verb in ('go', 'take', 'pick', 'drop', 'examine', 'read'):
             self.moves += 1
 
         return handler(noun, log)
@@ -302,6 +306,24 @@ class AdventureGame:
         if target:
             return target.description
         return "You don't see that here."
+
+    def _handle_read(self, noun: str, __: EventList) -> str:
+        loc = self.get_location()
+
+        if not noun:
+            return "Read what?"
+
+        command = f"read {noun}"
+
+        if command not in loc.available_commands:
+            return f"You can't read {noun} here."
+
+        if noun == "map":
+            if not self._map:
+                return "Map is not available."
+            return self._map.display()
+
+        return ""
 
 
 if __name__ == "__main__":

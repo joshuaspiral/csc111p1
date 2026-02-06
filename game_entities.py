@@ -85,6 +85,15 @@ class Item:
     target_position: int
     target_points: int
 
+@dataclass
+class Map:
+    key: dict[str, str]
+    grid: str
+
+    def display(self) -> str:
+        key_lines = ", ".join(f"{key}: {value}" for key, value in self.key.items())
+        return f"📜 MAP OF THE AREA 📜\nKey: {key_lines}\n{self.grid}"
+
 
 # Note: Other entities you may want to add, depending on your game plan:
 # - Puzzle class to represent special locations (could inherit from Location class if it seems suitable)

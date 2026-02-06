@@ -90,8 +90,8 @@
     {
       "id": 6,
       "name": "TCard Office",
-      "brief_description": "",
-      "long_description": "",
+      "brief_description": "You are at the TCard Office!",
+      "long_description": "You are at the TCard Office. There are frantic students who've just lost their TCards running around. The atmosphere is filled with anxiety. To the North is Cafe Reznikoff.",
       "available_commands": {
         "go north": 5,
         "buy tcard": 6
@@ -106,7 +106,10 @@
       "start_position": 6,
       "target_position": 3,
       "target_points": 0,
-      "required_items": ["wallet", "passport"],
+      "required_items": [
+        "wallet",
+        "passport"
+      ],
       "heavy": false
     },
     {

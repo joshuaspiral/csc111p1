@@ -409,7 +409,7 @@ class AdventureGame:
         if item is None:
             return f"{noun} is not available for purchase."
 
-        required_items = getattr(item, "required_items", [])
+        required_items = item.required_items if item.required_items is not None else []
         inventory_items = {i.name for i in self.inventory}
         missing = [req for req in required_items if req not in inventory_items]
         if missing:
@@ -482,7 +482,7 @@ if __name__ == "__main__":
 
         # Check win condition
         if game.check_win_condition():
-            print(f"\n{BOLD}{BG_GREEN}{WHITE} 🎉 CONGRATULATIONS! 🎉 {RESET}")
+            print(f"\n{BOLD}{BG_GREEN}{WHITE} CONGRATULATIONS! {RESET}")
             print(f"{GREEN}You have returned all the missing items to your dorm room!{RESET}")
             print(f"{BOLD}Final Score: {YELLOW}{game.score}{RESET}")
             game.ongoing = False
@@ -490,7 +490,7 @@ if __name__ == "__main__":
 
         # Check lose condition
         if game.check_lose_condition():
-            print(f"\n{BOLD}{BG_RED}{WHITE} ⏰ TIME'S UP! ⏰ {RESET}")
+            print(f"\n{BOLD}{BG_RED}{WHITE} TIME'S UP! {RESET}")
             print(f"{RED}It's 1:00pm! The deadline has passed.{RESET}")
             print(f"{DIM}You ran out of time. GAME OVER.{RESET}")
             game.ongoing = False
@@ -510,7 +510,7 @@ if __name__ == "__main__":
 
         # Display possible actions
         print(f"\n{MAGENTA}{'─'*40}{RESET}")
-        print(f"{BOLD}Commands:{RESET} {DIM}help, look, inventory, score, log, quit{RESET}")
+        print(f"{BOLD}Commands:{RESET} {DIM}look, inventory, score, log, quit{RESET}")
         print(f"{BOLD}Movement:{RESET}", end=" ")
         actions = list(location.available_commands.keys())
         print(f"{GREEN}{', '.join(actions)}{RESET}" if actions else f"{DIM}(none){RESET}")

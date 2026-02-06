@@ -9,5 +9,5 @@ CSC111 Project 1 Winter 2026
 - [x] refactor process.comand (add helper functions, e.g., _handle_take)
 - [x] add "locked" attribute
 - [x] add extra feature
-- [ ] small refactoring + pythonTA
+- [x] small refactoring + pythonTA
 - [x] fix logger!!!

@@ -24,7 +24,6 @@ This file is Copyright (c) 2026 CSC111 Teaching Team
 from __future__ import annotations
 from event_logger import Event, EventList
 from adventure import AdventureGame
-from game_entities import Location
 
 
 class AdventureGameSimulation:
@@ -36,7 +35,6 @@ class AdventureGameSimulation:
     _game: AdventureGame
     _events: EventList
 
-    # TODO: Copy/paste your code from A1, and make adjustments as needed
     def __init__(self, game_data_file: str, initial_location_id: int, commands: list[str]) -> None:
         """
         Initialize a new game simulation based on the given game data, that runs through the given commands.
@@ -52,9 +50,9 @@ class AdventureGameSimulation:
         loc = self._game.get_location()
         self._events.add_event(Event(loc.id_num, loc.long_description), None)
 
-        self.generate_events(commands, loc)
+        self.generate_events(commands)
 
-    def generate_events(self, commands: list[str], current_location: Location) -> None:
+    def generate_events(self, commands: list[str]) -> None:
         """
         Generate events in this simulation, based on current_location and commands, a valid list of commands.
 
@@ -92,11 +90,11 @@ class AdventureGameSimulation:
 
 
 if __name__ == "__main__":
-    # import python_ta
-    # python_ta.check_all(config={
-    #     'max-line-length': 120,
-    #     'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
-    # })
+    import python_ta
+    python_ta.check_all(config={
+        'max-line-length': 120,
+        'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
+    })
 
     # Win Walkthrough
     # Strategy:

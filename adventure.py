@@ -470,11 +470,11 @@ class AdventureGame:
 
 
 if __name__ == "__main__":
-    import python_ta
-    python_ta.check_all(config={
-        'max-line-length': 120,
-        'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
-    })
+    # import python_ta
+    # python_ta.check_all(config={
+    #     'max-line-length': 120,
+    #     'disable': ['R1705', 'E9998', 'E9999', 'static_type_checker']
+    # })
 
     game_log = EventList()
     game = AdventureGame('game_data.json', 1)
@@ -526,9 +526,10 @@ if __name__ == "__main__":
 
         # Display possible actions
         print(f"\n{MAGENTA}{'─' * 40}{RESET}")
-        print(f"{BOLD}Commands:{RESET} {DIM}look, inventory, score, log, quit{RESET}")
-        print(f"{BOLD}Movement:{RESET}", end=" ")
+        #print(f"{BOLD}Commands:{RESET} {DIM}look, inventory, score, log, quit{RESET}")
+        print(f"{BOLD}Commands:{RESET}", end=" ")
         actions = list(location.available_commands.keys())
+        actions.append("help")
         print(f"{GREEN}{', '.join(actions)}{RESET}" if actions else f"{DIM}(none){RESET}")
 
         # Get input

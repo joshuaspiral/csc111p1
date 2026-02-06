@@ -76,8 +76,8 @@
     {
       "id": 5,
       "name": "Cafe Reznikoff",
-      "brief_description": "You are at Cafe Reznikoff.",
-      "long_description": "You are at Cafe Reznikoff. The smell of fresh coffee and pastries fills the air. It's a great place to take a break, but you have no time for a break! To the West is St. George Street.",
+      "brief_description": "You are at Cafe Reznikoff. To get to your dorm, go North! The TCard Office is to your South and St. George Street is to the West.",
+      "long_description": "You are at Cafe Reznikoff. The smell of fresh coffee and pastries fills the air. It's a great place to take a break, but you have no time for a break! To the West is St. George Street, to the North is your Dorm, to the South is the TCard Office.",
       "available_commands": {
         "go west": 2,
         "go south": 6,
@@ -102,7 +102,7 @@
   "items": [
     {
       "name": "tcard",
-      "description": "Your T-Card. You need this to get into the library.",
+      "description": "Your T-Card. You need this to get into the library. It is light.",
       "start_position": 6,
       "target_position": 3,
       "target_points": 0,
@@ -114,21 +114,21 @@
     },
     {
       "name": "wallet",
-      "description": "Your wallet. This contains $20 cash. You need it to pay for things!",
+      "description": "Your wallet. This contains $20 cash. You need it to pay for things! It is heavy.",
       "start_position": 7,
       "target_position": 6,
       "target_points": 0
     },
     {
       "name": "passport",
-      "description": "Your passport, a form of government issued id. Used to prove your identity.",
+      "description": "Your passport, a form of government issued id. Used to prove your identity. It is heavy.",
       "start_position": 4,
       "target_position": 6,
       "target_points": 0
     },
     {
       "name": "fob",
-      "description": "Your fob. You need this to enter your dorm room in Morrison.",
+      "description": "Your fob. You need this to enter your dorm room in Morrison. It is light.",
       "start_position": 1,
       "target_position": 4,
       "target_points": 0,
@@ -136,21 +136,21 @@
     },
     {
       "name": "usb drive",
-      "description": "Your precious USB drive containing the only copy of your game!",
+      "description": "Your precious USB drive containing the only copy of your game! It is heavy.",
       "start_position": 3,
       "target_position": 4,
       "target_points": 20
     },
     {
       "name": "laptop charger",
-      "description": "Your laptop charger. You won't last long without it.",
+      "description": "Your laptop charger. You won't last long without it. It is heavy.",
       "start_position": 3,
       "target_position": 4,
       "target_points": 10
     },
     {
       "name": "lucky mug",
-      "description": "Your lucky U of T mug.",
+      "description": "Your lucky U of T mug. It is heavy.",
       "start_position": 5,
       "target_position": 4,
       "target_points": 15
